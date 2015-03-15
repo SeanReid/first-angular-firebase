@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html ng-app="">
+<head lang="en">
+  <meta charset="UTF-8">
+  <title></title>
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
+  <script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
+</head>
+
+<body class="container" ng-controller="employeeController">
+  <div>
+    <label>Employee Name</label>
+    <input type="text" id="employeeName" ng-model="employeeName"><br />
+
+    <label>Employee Age</label>
+    <input type="text" id="employeeAge" ng-model="employeeAge">
+  </div>
+
+  <div>
+    <button class="btn btn-default" ng-click="saveEmployee()">
+      Save <span class="glyphicon glyphicon-ok"></span>
+    </button>
+  </div>
+
+  <div>
+    <table class="table table-bordered">
+      <thead>
+        <th>Employee Name</th>
+        <th>Age</th>
+      </thead>
+      <tbody ng-repeat="employee in employees">
+        <tr>
+          <td>{{ employee.employeeName }}</td>
+          <td>{{ employee.employeeAge }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    function employeeController($scope, $timeout) {
+      $scope.employeeName = "";
+      $scope.employeeAge = 0;
+      $scope.employees = {};
+
+      $scope.myData = new Firebase("https://blinding-torch-2951.firebaseio.com/Employees")
+
+      $scope.saveEmployee = function() {
+        $scope.myData.push({employeeName:$scope.employeeName,
+                            employeeAge:$scope.employeeAge});
+        $scope.employeeName = "";
+        $scope.employeeAge = 0;
+      };
+
+      $scope.myData.on('value', function(snapshot) {
+        $timeout(function () {
+          $scope.employees = snapshot.val();
+        });
+      });
+
+    };
+  </script>
+</body>
+</html>
